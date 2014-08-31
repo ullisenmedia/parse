@@ -8,12 +8,12 @@ declare module Parse {
     module Cloud {
 
         interface CookieOptions {
-            domain: string;
-            expires: Date;
-            httpOnly: boolean;
-            maxAge: number;
-            path: string;
-            secure: boolean;
+            domain?: string;
+            expires?: Date;
+            httpOnly?: boolean;
+            maxAge?: number;
+            path?: string;
+            secure?: boolean;
         }
 
         interface HttpOptions {
@@ -26,7 +26,7 @@ declare module Parse {
             url?: string;
         }
 
-        interface HttpRequest {
+        interface HttpResponse {
             buffer?: any; // TODO: Should be buffer
             cookies?: any;
             data?: any;
@@ -48,35 +48,36 @@ declare module Parse {
         interface FunctionRequest {
             installationId?: String;
             master?: boolean;
-            object?: Object;
+            params?: any;
             user?: User;
         }
 
         interface FunctionResponse {
-            success?: Function;
-            error?: Function;
+            success?: (response: HttpResponse) => void;
+            error?: (response: HttpResponse) => void;
         }
 
         interface Cookie {
-            name: string;
-            options: CookieOptions;
-            value: string;
+            name?: string;
+            options?: CookieOptions;
+            value?: string;
         }
 
-        interface AfterDeleteRequest extends FunctionRequest {}
         interface AfterSaveRequest extends FunctionRequest {}
-        interface BeforeDeleteRequest extends FunctionRequest {}
+        interface AfterDeleteRequest extends FunctionRequest {}
         interface AfterDeleteResponse extends FunctionResponse {}
+        interface BeforeDeleteRequest extends FunctionRequest {}
+        interface BeforeDeleteResponse extends FunctionResponse {}
         interface BeforeSaveRequest extends FunctionRequest {}
         interface BeforeSaveResponse extends FunctionResponse {}
 
-        function afterDelete(arg1: any, func: Function);
-        function afterSave(arg1: any, func: Function);
-        function beforeDelete(arg1: any, func: Function);
-        function beforeSave(arg1: any, func: Function);
-        function define(name: string, func: Function);
-        function httpRequest(options: ParseDefaultOptions): Promise;
-        function job(name: string, func: Function);
+        function afterDelete(arg1: any, func?: (request: AfterDeleteRequest) => void);
+        function afterSave(arg1: any, func?: (request: AfterSaveRequest) => void);
+        function beforeDelete(arg1: any, func?: (request: BeforeDeleteRequest, response: BeforeDeleteResponse) => void);
+        function beforeSave(arg1: any, func?: (request: BeforeSaveRequest, response: BeforeSaveResponse) => void);
+        function define(name: string, func?: (request: FunctionRequest, response: FunctionResponse) => void);
+        function httpRequest(options: ParseDefaultOptions): Promise; // TODO: HttpResponse
+        function job(name: string, func?: (request: JobRequest, status: JobStatus) => void): HttpResponse;
         function run(name: string, data: any, options: Promise);
         function useMasterKey();
     }
@@ -117,6 +118,8 @@ declare module Parse {
         useMasterKey?: boolean;
     }
 
+
+    // TODO: Should Promise be generic
     class Promise {
         always(callback: Function);
         as(): Promise;
@@ -214,7 +217,7 @@ declare module Parse {
        at?: number;
     }
 
-    class Collection {
+    class Collection extends JSONObject {
         add(models: Object[], options?: CollectionAddOptions);
         at(index: number);
         chain();
@@ -227,7 +230,6 @@ declare module Parse {
         remove(models: Object[], options?: ParseDefaultOptions);
         reset(models: Object[], options?: ParseDefaultOptions);
         sort(options?: ParseDefaultOptions);
-        toJSON(): any;
         constructor(models: Object[], options?: CollectionOptions);
     }
 
@@ -240,12 +242,12 @@ declare module Parse {
     }
 
     interface PushData {
-        channels: any[];
+        channels?: any[];
         push_time?: Date;
         expiration_time?: Date;
-        expiration_interval: number;
+        expiration_interval?: number;
         where?: Query;
-        data: any;
+        data?: any;
     }
 
     class Push {
@@ -276,13 +278,13 @@ declare module Parse {
     }
 
     class History {
-        checkUrl(e: any);
-        getFragment(fragment: any, forcePushState: any): any;
-        getHash(windowOverride: any): any;
-        loadUrl(fragmentOverride: any);
-        navigate(fragment: any, options?: any);
+        checkUrl(e: any): any;
+        getFragment(fragment?: string, forcePushState?: boolean): any;
+        getHash(windowOverride: any): string;
+        loadUrl(fragmentOverride: any): boolean;
+        navigate(fragment: string, options?: any): any;
         route(route: any, callback: Function);
-        start(options: any);
+        start(options: any): boolean;
         stop();
     }
 
@@ -322,7 +324,7 @@ declare module Parse {
         near(key: string, point: GeoPoint): Query;
         notContainedIn(key: string, values: any[]): Query;
         notEqualTo(key: string, value: any): Query;
-        or(...var_args: Query[]): Query;
+        static or(...var_args: Query[]): Query;
         select(keys: string[]): Query;
         skip(n: number): Query;
         startsWith(key: string, prefix: string): Query;
