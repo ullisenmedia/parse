@@ -5,6 +5,19 @@
 
 declare module Parse {
 
+    module Cloud {
+
+        function afterDelete(arg1: any, func: Function);
+        function afterSave(arg1: any, func: Function);
+        function beforeDelete(arg1: any, func: Function);
+        function beforeSave(arg1: any, func: Function);
+        function define(name: string, func: Function);
+        function httpRequest(options: Parse.CallbackOptions): Parse.Promise;
+        function job(name: string, func: Function);
+        function run(name: string, data: any, options: Parse.Promise);
+        function useMasterKey();
+    }
+
     interface CallbackOptions {
         wait?: boolean;
         silent?: boolean;
@@ -26,8 +39,38 @@ declare module Parse {
         static when(promises: Array<Parse.Promise>);
     }
 
-    interface ACL {
+    class Role {
 
+    }
+
+    class Analytics {
+        static track(name: string, dimensions: any): Parse.Promise;
+    }
+
+    class ACL {
+
+        getPublicReadAccess(): boolean;
+        getPublicWriteAccess(): boolean;
+        getReadAccess(userId: Parse.User): boolean;
+        getReadAccess(userId: string): boolean;
+        getRoleReadAccess(role: Parse.Role): boolean;
+        getRoleReadAccess(role: string): boolean;
+        getRoleWriteAccess(role: Parse.Role): boolean;
+        getRoleWriteAccess(role: string): boolean;
+        getWriteAccess(userId: Parse.User): boolean;
+        getWriteAccess(userId: string): boolean;
+        setPublicReadAccess(allowed: boolean);
+        setPublicWriteAccess(allowed: boolean);
+        setReadAccess(userId: Parse.User, allowed: boolean);
+        setReadAccess(userId: string, allowed: boolean);
+        setRoleReadAccess(role: Parse.Role, allowed: boolean);
+        setRoleReadAccess(role: string, allowed: boolean);
+        setRoleWriteAccess(role: Parse.Role, allowed: boolean);
+        setRoleWriteAccess(role: string, allowed: boolean);
+        setWriteAccess(userId: Parse.User, allowed: boolean);
+        setWriteAccess(userId: string, allowed: boolean);
+        toJSON(): any;
+        constructor(arg1: any);
     }
 
     interface Op {
