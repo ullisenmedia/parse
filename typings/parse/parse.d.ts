@@ -125,7 +125,7 @@ declare module Parse {
     // TODO: Should Promise be generic
     interface Promise<T> {
         always(callback: Function);
-        as<T>(): Promise<T>;
+        as<U>(): Promise<T>;
         done(callback: Function);
         error<T>(): Promise<T>;
         fail(callback: Function);
@@ -281,14 +281,14 @@ declare module Parse {
     }
 
     class History {
-        checkUrl(e: any): any;
-        getFragment(fragment?: string, forcePushState?: boolean): any;
-        getHash(windowOverride: any): string;
+        checkUrl(e?: any): void;
+        getFragment(fragment?: string, forcePushState?: boolean): string;
+        getHash(windowOverride: Window): string;
         loadUrl(fragmentOverride: any): boolean;
         navigate(fragment: string, options?: any): any;
-        route(route: any, callback: Function);
+        route(route: any, callback: Function): void;
         start(options: any): boolean;
-        stop();
+        stop(): void;
     }
 
     class Query extends JSONObject {
@@ -354,12 +354,21 @@ declare module Parse {
         constructor(name: string, acl: ACL);
     }
 
+    interface RouterOptions {
+        routes: any;
+    }
+
+    interface NavigateOptions {
+        trigger?: boolean;
+    }
+
     class Router {
         static extend(instanceProps: any, classProps: any): any;
-        initialize();
-        navigate(fragment: string, options: any); // TODO: check
-        route(route: string, name: string, callback: Function);
-        constructor(options: any);
+        initialize(): void;
+        navigate(fragment: string, options?: NavigateOptions): Router;
+        navigate(fragment: string, trigger?: boolean): Router;
+        route(route: string, name: string, callback: Function): Router;
+        constructor(options?: RouterOptions);
     }
 
     class User {
