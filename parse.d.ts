@@ -7,6 +7,59 @@ declare module Parse {
 
     module Cloud {
 
+        interface CookieOptions {
+            domain: string;
+            expires: Date;
+            httpOnly: boolean;
+            maxAge: number;
+            path: string;
+            secure: boolean;
+        }
+
+        interface HttpOptions {
+            body?: any;
+            error?: Function;
+            headers?: any;
+            method?: string;
+            params?: any;
+            success?: Function;
+            url?: string;
+        }
+
+        interface HttpRequest {
+            buffer: any; // TODO: Should be buffer
+            cookies: any;
+            data: any;
+            headers: any;
+            status: number;
+            text: string;
+        }
+
+        interface FunctionRequest {
+            installationId?: String;
+            master?: boolean;
+            object?: Parse.Object;
+            user?: Parse.User;
+        }
+
+        interface FunctionResponse {
+            success?: Function;
+            error?: Function;
+        }
+
+        interface Cookie {
+            name: string;
+            options: Parse.Cloud.CookieOptions;
+            value: string;
+        }
+
+        interface AfterDeleteRequest extends Parse.Cloud.FunctionRequest {}
+        interface AfterSaveRequest extends Parse.Cloud.FunctionRequest {}
+        interface BeforeDeleteRequest extends Parse.Cloud.FunctionRequest {}
+        interface AfterDeleteResponse extends Parse.Cloud.FunctionResponse {}
+        interface BeforeSaveRequest extends Parse.Cloud.FunctionRequest {}
+        interface BeforeSaveResponse extends Parse.Cloud.FunctionResponse {}
+
         function afterDelete(arg1: any, func: Function);
         function afterSave(arg1: any, func: Function);
         function beforeDelete(arg1: any, func: Function);
