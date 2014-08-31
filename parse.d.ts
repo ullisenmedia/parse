@@ -102,10 +102,6 @@ declare module Parse {
         static when(promises: Array<Promise>);
     }
 
-    class Role {
-
-    }
-
     class Analytics {
         static track(name: string, dimensions: any): Promise;
     }
@@ -232,12 +228,27 @@ declare module Parse {
         send(data: PushData, options?: CallbackOptions): Promise;
     }
 
-    class File {
-
+    class FacebookUtils {
+        static init(options: any);
+        static isLinked(user: User): boolean;
+        static link(user: User, permissions: any, options: CallbackOptions);
+        static logIn(permissions: any, options: CallbackOptions);
+        static unlink(user: User, options: CallbackOptions);
     }
 
-    class GeoPoint {
+    class File {
+        name(): string;
+        save(options?: CallbackOptions);
+        url(): string;
+        constructor(name: string, data: any, type?: string);
+    }
 
+    class GeoPoint extends JSONObject {
+        static current(options: CallbackOptions): GeoPoint;
+        kilometersTo(point: GeoPoint): number;
+        milesTo(point: GeoPoint): number;
+        radiansTo(point: GeoPoint): number;
+        constructor(arg1: any, arg2: any);
     }
 
     class History {
@@ -292,6 +303,29 @@ declare module Parse {
         constructor(className: string);
     }
 
+    class Relation extends JSONObject {
+        add(object: Object);
+        query(): Query;
+        remove(object: Object);
+        constructor(parent?: Object, key?: string);
+    }
+
+    class Role {
+        getName(): string;
+        getRoles(): Relation;
+        getUsers(): Relation;
+        setName(name: string, options?: CallbackOptions);
+        constructor(name: string, acl: ACL);
+    }
+
+    class Router {
+        static extend(instanceProps: any, classProps: any): any;
+        initialize();
+        navigate(fragment: string, options: any); // TODO: check
+        route(route: string, name: string, callback: Function);
+        constructor(options: any);
+    }
+
     class User {
         static allowCustomUserClass(isAllowed: boolean);
         authenticated();
@@ -324,14 +358,6 @@ declare module Parse {
         render();
         setElement(element: any, delegate: any);
         undelegateEvents();
-    }
-
-    class FacebookUtils {
-        static init(options: any);
-        static isLinked(user: User): boolean;
-        static link(user: User, permissions: any, options: CallbackOptions);
-        static logIn(permissions: any, options: CallbackOptions);
-        static unlink(user: User, options: CallbackOptions);
     }
 
     class Error {
