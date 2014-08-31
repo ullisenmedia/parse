@@ -48,8 +48,8 @@ declare module Parse {
         interface FunctionRequest {
             installationId?: String;
             master?: boolean;
-            object?: Parse.Object;
-            user?: Parse.User;
+            object?: Object;
+            user?: User;
         }
 
         interface FunctionResponse {
@@ -59,25 +59,25 @@ declare module Parse {
 
         interface Cookie {
             name: string;
-            options: Parse.Cloud.CookieOptions;
+            options: CookieOptions;
             value: string;
         }
 
-        interface AfterDeleteRequest extends Parse.Cloud.FunctionRequest {}
-        interface AfterSaveRequest extends Parse.Cloud.FunctionRequest {}
-        interface BeforeDeleteRequest extends Parse.Cloud.FunctionRequest {}
-        interface AfterDeleteResponse extends Parse.Cloud.FunctionResponse {}
-        interface BeforeSaveRequest extends Parse.Cloud.FunctionRequest {}
-        interface BeforeSaveResponse extends Parse.Cloud.FunctionResponse {}
+        interface AfterDeleteRequest extends FunctionRequest {}
+        interface AfterSaveRequest extends FunctionRequest {}
+        interface BeforeDeleteRequest extends FunctionRequest {}
+        interface AfterDeleteResponse extends FunctionResponse {}
+        interface BeforeSaveRequest extends FunctionRequest {}
+        interface BeforeSaveResponse extends FunctionResponse {}
 
         function afterDelete(arg1: any, func: Function);
         function afterSave(arg1: any, func: Function);
         function beforeDelete(arg1: any, func: Function);
         function beforeSave(arg1: any, func: Function);
         function define(name: string, func: Function);
-        function httpRequest(options: Parse.CallbackOptions): Parse.Promise;
+        function httpRequest(options: CallbackOptions): Promise;
         function job(name: string, func: Function);
-        function run(name: string, data: any, options: Parse.Promise);
+        function run(name: string, data: any, options: Promise);
         function useMasterKey();
     }
 
@@ -91,15 +91,15 @@ declare module Parse {
 
     class Promise {
         always(callback: Function);
-        as(): Parse.Promise;
+        as(): Promise;
         done(callback: Function);
-        error(): Parse.Promise;
+        error(): Promise;
         fail(callback: Function);
-        is(): Parse.Promise;
+        is(): Promise;
         reject(error: any);
         resolve(result: any);
-        then(resolvedCallback: Function, rejectedCallback: Function): Parse.Promise;
-        static when(promises: Array<Parse.Promise>);
+        then(resolvedCallback: Function, rejectedCallback: Function): Promise;
+        static when(promises: Array<Promise>);
     }
 
     class Role {
@@ -107,32 +107,30 @@ declare module Parse {
     }
 
     class Analytics {
-        static track(name: string, dimensions: any): Parse.Promise;
+        static track(name: string, dimensions: any): Promise;
     }
 
-    class ACL {
-
+    class ACL extends JSONObject {
         getPublicReadAccess(): boolean;
         getPublicWriteAccess(): boolean;
-        getReadAccess(userId: Parse.User): boolean;
+        getReadAccess(userId: User): boolean;
         getReadAccess(userId: string): boolean;
-        getRoleReadAccess(role: Parse.Role): boolean;
+        getRoleReadAccess(role: Role): boolean;
         getRoleReadAccess(role: string): boolean;
-        getRoleWriteAccess(role: Parse.Role): boolean;
+        getRoleWriteAccess(role: Role): boolean;
         getRoleWriteAccess(role: string): boolean;
-        getWriteAccess(userId: Parse.User): boolean;
+        getWriteAccess(userId: User): boolean;
         getWriteAccess(userId: string): boolean;
         setPublicReadAccess(allowed: boolean);
         setPublicWriteAccess(allowed: boolean);
-        setReadAccess(userId: Parse.User, allowed: boolean);
+        setReadAccess(userId: User, allowed: boolean);
         setReadAccess(userId: string, allowed: boolean);
-        setRoleReadAccess(role: Parse.Role, allowed: boolean);
+        setRoleReadAccess(role: Role, allowed: boolean);
         setRoleReadAccess(role: string, allowed: boolean);
-        setRoleWriteAccess(role: Parse.Role, allowed: boolean);
+        setRoleWriteAccess(role: Role, allowed: boolean);
         setRoleWriteAccess(role: string, allowed: boolean);
-        setWriteAccess(userId: Parse.User, allowed: boolean);
+        setWriteAccess(userId: User, allowed: boolean);
         setWriteAccess(userId: string, allowed: boolean);
-        toJSON(): any;
         constructor(arg1: any);
     }
 
@@ -140,48 +138,55 @@ declare module Parse {
 
     }
 
-    class Object {
+    interface IJSONObject {
+        toJSON: any;
+    }
+
+    class JSONObject implements IJSONObject {
+        toJSON: any;
+    }
+
+    class Object extends JSONObject {
         add(attr: string, item: any);
         addUnique(attr: string, item: any);
         change(options: any);
         changedAttributes(diff: any);
         clear(options: any);
-        clone(): Parse.Object;
-        destroy(options: Parse.CallbackOptions): Parse.Promise;
-        destroyAll(list: Array<Parse.Object>, options: CallbackOptions): Parse.Promise;
+        clone(): Object;
+        destroy(options: CallbackOptions): Promise;
+        destroyAll(list: Array<Object>, options: CallbackOptions): Promise;
         dirty(attr: String): boolean;
         dirtyKeys(): Array<string>;
         escape(attr: string);
         existed(): boolean;
         static extend(className: string, protoProps: any, classProps: any): any;
-        fetch(options: Parse.CallbackOptions): Parse.Promise;
-        static fetchAll(list: Array<Parse.Object>, options: CallbackOptions): Parse.Promise;
-        static fetchAllIfNeeded(list: Array<Parse.Object>, options: CallbackOptions): Parse.Promise;
+        fetch(options: CallbackOptions): Promise;
+        static fetchAll(list: Array<Object>, options: CallbackOptions): Promise;
+        static fetchAllIfNeeded(list: Array<Object>, options: CallbackOptions): Promise;
         get(attr: string): any;
-        getACL(): Parse.ACL;
+        getACL(): ACL;
         has(attr: string): boolean;
         hasChanged(attr: string): boolean;
-        increment(attr: string, amount: number): Parse.Promise;
+        increment(attr: string, amount: number): Promise;
         initialize();
         isValid(): boolean;
-        op(attr: string): Parse.Op;
+        op(attr: string): Op;
         previous(attr: string);
         previousAttributes(): any;
         relation(attr: string);
         remove(attr: string, item: any);
-        save(options: Parse.CallbackOptions, arg2: any, arg3: any): Parse.Promise;
-        saveAll(list: Array<Parse.Object>, options: Parse.CallbackOptions): Parse.Promise;
-        set(key: string, value: any, options: Parse.CallbackOptions): boolean;
-        setACL(acl: Parse.ACL, options: Parse.CallbackOptions): boolean;
-        toJSON(): any;
+        save(options: CallbackOptions, arg2: any, arg3: any): Promise;
+        saveAll(list: Array<Object>, options: CallbackOptions): Promise;
+        set(key: string, value: any, options: CallbackOptions): boolean;
+        setACL(acl: ACL, options: CallbackOptions): boolean;
         unset(attr: string, options: any);
-        validate(attrs: any, options: Parse.CallbackOptions): boolean;
+        validate(attrs: any, options: CallbackOptions): boolean;
         constructor(attributes: any, options: any);
     }
 
     interface CollectionOptions {
-        model?: Parse.Object;
-        query?: Parse.Query;
+        model?: Object;
+        query?: Query;
         comparator?: string;
     }
 
@@ -190,20 +195,20 @@ declare module Parse {
     }
 
     class Collection {
-        add(models: Array<Parse.Object>, options?: Parse.CollectionAddOptions);
+        add(models: Array<Object>, options?: CollectionAddOptions);
         at(index: number);
         chain();
-        create(model: Parse.Object, options?: Parse.CallbackOptions);
+        create(model: Object, options?: CallbackOptions);
         static extend(instanceProps: any, classProps: any);
         get(id: string);
         getByCid(cid: string);
         initialize();
         pluck(attr: string);
-        remove(models: Array<Parse.Object>, options?: Parse.CallbackOptions);
-        reset(models: Array<Parse.Object>, options?: Parse.CallbackOptions);
-        sort(options?: Parse.CallbackOptions);
+        remove(models: Array<Object>, options?: CallbackOptions);
+        reset(models: Array<Object>, options?: CallbackOptions);
+        sort(options?: CallbackOptions);
         toJSON(): any;
-        constructor(models: Array<Parse.Object>, options?: Parse.CallbackOptions);
+        constructor(models: Array<Object>, options?: CallbackOptions);
     }
 
     class Events {
@@ -214,30 +219,99 @@ declare module Parse {
         static unbind();
     }
 
-    interface Query {
+    interface PushData {
+        channels: Array<any>;
+        push_time?: Date;
+        expiration_time?: Date;
+        expiration_interval: number;
+        where?: Parse.Query;
+        data: any;
+    }
 
+    class Push {
+        send(data: PushData, options?: CallbackOptions): Promise;
+    }
+
+    class File {
+
+    }
+
+    class GeoPoint {
+
+    }
+
+    class History {
+
+    }
+
+    class Query extends JSONObject {
+        addAscending(key: string): Query;
+        addAscending(key: Array<string>): Query;
+        addDescending(key: string): Query;
+        addDescending(key: Array<string>): Query;
+        ascending(key: string): Parse.Query;
+        ascending(key: Array<string>): Query;
+        collection(items: Array<Object>, options?: CallbackOptions): Collection;
+        containedIn(key: string, values: Array<any>): Query;
+        contains(key: string, substring: string): Query;
+        containsAll(key: string, values: Array<any>): Query;
+        count(options?: CallbackOptions): Promise;
+        descending(key: string): Query;
+        descending(key: Array<string>): Query;
+        doesNotExist(key: string): Query;
+        doesNotMatchKeyInQuery(key: string, queryKey: string, query: Query): Query;
+        doesNotMatchQuery(key: string, query: Query): Query;
+        each(callback: Function, options?: CallbackOptions): Promise;
+        endsWith(key: string, suffix: string): Query;
+        equalTo(key: string, value: any): Query;
+        exists(key: string): Query;
+        find(options?: CallbackOptions): Promise;
+        first(options?: CallbackOptions): Promise;
+        get(objectId: string, options?: CallbackOptions): Promise;
+        greaterThan(key: string, value: any): Query;
+        greaterThanOrEqualTo(key: string, value: any): Query;
+        include(key: string): Query;
+        lessThan(key: string, value: any): Query;
+        lessThanOrEqualTo(key: string, value: any): Query;
+        limit(n: number): Query;
+        matches(key: string, regex: RegExp, modifiers: any): Query;
+        matchesKeyInQuery(key: string, queryKey: string, query: Query): Query;
+        matchesQuery(key: string, query: Query): Query;
+        near(key: string, point: GeoPoint): Query;
+        notContainedIn(key: string, values: Array<any>): Query;
+        notEqualTo(key: string, value: any): Query;
+        or(...Query): Query;
+        select(keys: Array<string>): Query;
+        skip(n: number): Query;
+        startsWith(key: string, prefix: string): Query;
+        withinGeoBox(key: string, southwest: GeoPoint, northeast: GeoPoint): Query;
+        withinKilometers(key: string, point: GeoPoint, maxDistance: number): Query;
+        withinMiles(key: string, point: GeoPoint, maxDistance: number): Query;
+        withinRadians(key: string, point: GeoPoint, maxDistance: number): Query;
+        constructor(objectClass: any);
+        constructor(className: string);
     }
 
     class User {
         static allowCustomUserClass(isAllowed: boolean);
         authenticated();
-        static become(sessionToken: string, options: Parse.CallbackOptions): Parse.Promise;
-        static current(): Parse.User;
-        fetch(options: Parse.CallbackOptions): Parse.Promise;
+        static become(sessionToken: string, options: CallbackOptions): Promise;
+        static current(): User;
+        fetch(options: CallbackOptions): Promise;
         getEmail(): string;
         getSessionToken(): string;
         getUsername(): string;
         isCurrent(): boolean;
-        static logIn(username: string, password: string, options: Parse.CallbackOptions): Parse.Promise;
-        logIn(options: Parse.CallbackOptions): Parse.Promise;
+        static logIn(username: string, password: string, options: CallbackOptions): Promise;
+        logIn(options: CallbackOptions): Promise;
         static logOut();
-        requestPasswordReset(email: string, options: Parse.CallbackOptions): Parse.Promise;
-        save(arg1: any, arg2: any, arg3: any): Parse.Promise;
-        setEmail(email: string, options: Parse.CallbackOptions): boolean;
-        setPassword(password: string, options: Parse.CallbackOptions): boolean;
-        setUsername(username: string, options: Parse.CallbackOptions): boolean;
-        static signUp(username: string, password: string, attrs: any, options: Parse.CallbackOptions): Parse.Promise;
-        signUp(attrs: any, options: Parse.CallbackOptions): Parse.Promise;
+        requestPasswordReset(email: string, options: CallbackOptions): Promise;
+        save(arg1: any, arg2: any, arg3: any): Promise;
+        setEmail(email: string, options: CallbackOptions): boolean;
+        setPassword(password: string, options: CallbackOptions): boolean;
+        setUsername(username: string, options: CallbackOptions): boolean;
+        static signUp(username: string, password: string, attrs: any, options: CallbackOptions): Promise;
+        signUp(attrs: any, options: CallbackOptions): Promise;
     }
 
     class View {
@@ -254,10 +328,10 @@ declare module Parse {
 
     class FacebookUtils {
         static init(options: any);
-        static isLinked(user: Parse.User): boolean;
-        static link(user: Parse.User, permissions: any, options: Parse.CallbackOptions);
-        static logIn(permissions: any, options: Parse.CallbackOptions);
-        static unlink(user: Parse.User, options: Parse.CallbackOptions);
+        static isLinked(user: User): boolean;
+        static link(user: User, permissions: any, options: CallbackOptions);
+        static logIn(permissions: any, options: CallbackOptions);
+        static unlink(user: User, options: CallbackOptions);
     }
 
     class Error {
