@@ -27,12 +27,22 @@ declare module Parse {
         }
 
         interface HttpRequest {
-            buffer: any; // TODO: Should be buffer
-            cookies: any;
-            data: any;
-            headers: any;
-            status: number;
-            text: string;
+            buffer?: any; // TODO: Should be buffer
+            cookies?: any;
+            data?: any;
+            headers?: any;
+            status?: number;
+            text?: string;
+        }
+
+        interface JobRequest {
+            params: any;
+        }
+
+        interface JobStatus {
+            error?: Function;
+            message?: Function;
+            success?: Function;
         }
 
         interface FunctionRequest {
@@ -169,12 +179,43 @@ declare module Parse {
         constructor(attributes: any, options: any);
     }
 
+    interface CollectionOptions {
+        model?: Parse.Object;
+        query?: Parse.Query;
+        comparator?: string;
+    }
+
+    interface CollectionAddOptions {
+       at?: number;
+    }
+
+    class Collection {
+        add(models: Array<Parse.Object>, options?: Parse.CollectionAddOptions);
+        at(index: number);
+        chain();
+        create(model: Parse.Object, options?: Parse.CallbackOptions);
+        static extend(instanceProps: any, classProps: any);
+        get(id: string);
+        getByCid(cid: string);
+        initialize();
+        pluck(attr: string);
+        remove(models: Array<Parse.Object>, options?: Parse.CallbackOptions);
+        reset(models: Array<Parse.Object>, options?: Parse.CallbackOptions);
+        sort(options?: Parse.CallbackOptions);
+        toJSON(): any;
+        constructor(models: Array<Parse.Object>, options?: Parse.CallbackOptions);
+    }
+
     class Events {
         static bind();
         static off(events: Array<string>, callback: Function, context: any);
         static on(events: Array<string>, callback: Function, context: any);
         static trigger(events: Array<string>);
         static unbind();
+    }
+
+    interface Query {
+
     }
 
     class User {
