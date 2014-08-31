@@ -252,7 +252,14 @@ declare module Parse {
     }
 
     class History {
-
+        checkUrl(e: any);
+        getFragment(fragment: any, forcePushState: any): any;
+        getHash(windowOverride: any): any;
+        loadUrl(fragmentOverride: any);
+        navigate(fragment: any, options?: any);
+        route(route: any, callback: Function);
+        start(options: any);
+        stop();
     }
 
     class Query extends JSONObject {
