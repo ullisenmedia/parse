@@ -173,8 +173,8 @@ declare module Parse {
         add(attr: string, item: any);
         addUnique(attr: string, item: any);
         change(options: any);
-        changedAttributes(diff: any);
-        clear(options: any);
+        changedAttributes(diff: any): any;
+        clear(options: any): any;
         clone(): Object;
         destroy(options: ParseDefaultOptions): Promise;
         destroyAll(list: Object[], options: ParseDefaultOptions): Promise;
@@ -190,21 +190,21 @@ declare module Parse {
         getACL(): ACL;
         has(attr: string): boolean;
         hasChanged(attr: string): boolean;
-        increment(attr: string, amount: number): Promise;
+        increment(attr: string, amount?: number): any;
         initialize();
         isValid(): boolean;
         op(attr: string): any;
-        previous(attr: string);
+        previous(attr: string): any;
         previousAttributes(): any;
-        relation(attr: string);
-        remove(attr: string, item: any);
-        save(options: ParseDefaultOptions, arg2: any, arg3: any): Promise;
-        saveAll(list: Object[], options: ParseDefaultOptions): Promise;
+        relation(attr: string): Relation;
+        remove(attr: string, item: any): any;
+        save(options?: ParseDefaultOptions, arg2?: any, arg3?: any): Promise;
+        saveAll(list: Object[], options?: ParseDefaultOptions): Promise;
         set(key: string, value: any, options: ParseDefaultOptions): boolean;
         setACL(acl: ACL, options: ParseDefaultOptions): boolean;
-        unset(attr: string, options: any);
-        validate(attrs: any, options: ParseDefaultOptions): boolean;
-        constructor(attributes: any, options: any);
+        unset(attr: string, options?: any): any;
+        validate(attrs: any, options?: ParseDefaultOptions): boolean;
+        constructor(attributes?: any, options?: any);
     }
 
     interface CollectionOptions {
