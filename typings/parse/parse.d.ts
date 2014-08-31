@@ -9,111 +9,15 @@
 
 declare module Parse {
 
-    module Cloud {
-
-        interface CookieOptions {
-            domain?: string;
-            expires?: Date;
-            httpOnly?: boolean;
-            maxAge?: number;
-            path?: string;
-            secure?: boolean;
-        }
-
-        interface HttpOptions {
-            body?: any;
-            error?: Function;
-            headers?: any;
-            method?: string;
-            params?: any;
-            success?: Function;
-            url?: string;
-        }
-
-        interface HttpResponse {
-            buffer?: Buffer;
-            cookies?: any;
-            data?: any;
-            headers?: any;
-            status?: number;
-            text?: string;
-        }
-
-        interface JobRequest {
-            params: any;
-        }
-
-        interface JobStatus {
-            error?: Function;
-            message?: Function;
-            success?: Function;
-        }
-
-        interface FunctionRequest {
-            installationId?: String;
-            master?: boolean;
-            params?: any;
-            user?: User;
-        }
-
-        interface FunctionResponse {
-            success?: (response: HttpResponse) => void;
-            error?: (response: HttpResponse) => void;
-        }
-
-        interface Cookie {
-            name?: string;
-            options?: CookieOptions;
-            value?: string;
-        }
-
-        interface AfterSaveRequest extends FunctionRequest {}
-        interface AfterDeleteRequest extends FunctionRequest {}
-        interface AfterDeleteResponse extends FunctionResponse {}
-        interface BeforeDeleteRequest extends FunctionRequest {}
-        interface BeforeDeleteResponse extends FunctionResponse {}
-        interface BeforeSaveRequest extends FunctionRequest {}
-        interface BeforeSaveResponse extends FunctionResponse {}
-
-        function afterDelete(arg1: any, func?: (request: AfterDeleteRequest) => void);
-        function afterSave(arg1: any, func?: (request: AfterSaveRequest) => void);
-        function beforeDelete(arg1: any, func?: (request: BeforeDeleteRequest, response: BeforeDeleteResponse) => void);
-        function beforeSave(arg1: any, func?: (request: BeforeSaveRequest, response: BeforeSaveResponse) => void);
-        function define(name: string, func?: (request: FunctionRequest, response: FunctionResponse) => void);
-        function httpRequest<T>(options: ParseDefaultOptions): Promise<T>; // TODO: HttpResponse
-        function job(name: string, func?: (request: JobRequest, status: JobStatus) => void): HttpResponse;
-        function run<T>(name: string, data: any, options: Promise<T>);
-        function useMasterKey();
-    }
-
-    module Op {
-
-        interface BaseOperation extends IJSONObject {
-            objects(): any[];
-        }
-
-        interface Add extends BaseOperation {}
-
-        interface AddUnique extends BaseOperation {}
-
-        interface Increment extends IJSONObject {
-            amount: number;
-        }
-
-        interface Relation extends IJSONObject {
-            added(): Object[];
-            removed: Object[];
-        }
-
-        interface Set extends IJSONObject {
-            value(): any;
-        }
-
-        interface Unset extends IJSONObject {}
-
-    }
-
-
+    /**
+     * Call this method first to set up your authentication tokens for Parse.
+     * You can get your keys from the Data Browser on parse.com.
+     * @param {String} applicationId Your Parse Application ID.
+     * @param {String} javaScriptKey Your Parse JavaScript Key.
+     * @param {String} masterKey (optional) Your Parse Master Key. (Node.js only!)
+     */
+    function initialize(applicationId: string, javaScriptKey: string, masterKey?: string);
+    
     interface ParseDefaultOptions {
         wait?: boolean;
         silent?: boolean;
@@ -122,20 +26,61 @@ declare module Parse {
         useMasterKey?: boolean;
     }
 
-
-    // TODO: Should Promise be generic
-    interface Promise<T> {
-        always(callback: Function);
-        as<U>(): Promise<T>;
-        done(callback: Function);
-        error<T>(): Promise<T>;
-        fail(callback: Function);
-        is<T>(): Promise<T>;
-        reject(error: any);
-        resolve(result: any);
-        then<T>(resolvedCallback: Function, rejectedCallback: Function): Promise<T>;
-        when<T>(promises: Promise<T>[]);
+    interface CollectionOptions {
+        model?: Object;
+        query?: Query;
+        comparator?: string;
     }
+
+    interface CollectionAddOptions {
+        at?: number;
+    }
+
+    interface RouterOptions {
+        routes: any;
+    }
+
+    interface NavigateOptions {
+        trigger?: boolean;
+    }
+
+    interface ViewOptions {
+        model?: any;
+        collection?: any;
+        el?: any;
+        id?: string;
+        className?: string;
+        tagName?: string;
+        attributes?: any[];
+    }
+
+    interface PushData {
+        channels?: any[];
+        push_time?: Date;
+        expiration_time?: Date;
+        expiration_interval?: number;
+        where?: Query;
+        data?: any;
+    }
+
+    interface Promise<T> {
+
+        always(callback: Function): Promise<T>;
+        as(): Promise<T>;
+        done(callback: Function): Promise<T>;
+        error(): Promise<T>;
+        fail(callback: Function): Promise<T>;
+        is(): Promise<T>;
+        reject(error: any): void;
+        resolve(result: any): void;
+        then(resolvedCallback: Function, rejectedCallback: Function): Promise<T>;
+        when(promises: Promise<T>[]): Promise<T>;
+    }
+
+    interface IJSONObject {
+        toJSON(): any;
+    }
+
 
     class Analytics {
         static track<T>(name: string, dimensions: any): Promise<T>;
@@ -165,15 +110,18 @@ declare module Parse {
         constructor(arg1: any);
     }
 
-    interface IJSONObject {
-        toJSON(): any;
-    }
-
     class JSONObject implements IJSONObject {
         toJSON(): any;
     }
 
     class Object extends JSONObject {
+
+        constructor(attributes?: any, options?: any);
+        static extend(className: string, protoProps: any, classProps: any): any;
+
+        static fetchAll<T>(list: Object[], options: ParseDefaultOptions): Promise<T>;
+        static fetchAllIfNeeded<T>(list: Object[], options: ParseDefaultOptions): Promise<T>;
+
         add(attr: string, item: any);
         addUnique(attr: string, item: any);
         change(options: any);
@@ -186,10 +134,7 @@ declare module Parse {
         dirtyKeys(): string[];
         escape(attr: string);
         existed(): boolean;
-        static extend(className: string, protoProps: any, classProps: any): any;
         fetch<T>(options: ParseDefaultOptions): Promise<T>;
-        static fetchAll<T>(list: Object[], options: ParseDefaultOptions): Promise<T>;
-        static fetchAllIfNeeded<T>(list: Object[], options: ParseDefaultOptions): Promise<T>;
         get(attr: string): any;
         getACL(): ACL;
         has(attr: string): boolean;
@@ -208,17 +153,7 @@ declare module Parse {
         setACL(acl: ACL, options: ParseDefaultOptions): boolean;
         unset(attr: string, options?: any): any;
         validate(attrs: any, options?: ParseDefaultOptions): boolean;
-        constructor(attributes?: any, options?: any);
-    }
 
-    interface CollectionOptions {
-        model?: Object;
-        query?: Query;
-        comparator?: string;
-    }
-
-    interface CollectionAddOptions {
-       at?: number;
     }
 
     class Collection extends JSONObject {
@@ -243,15 +178,6 @@ declare module Parse {
         static on(events: string[], callback?: Function, context?: any);
         static trigger(events: string[]);
         static unbind();
-    }
-
-    interface PushData {
-        channels?: any[];
-        push_time?: Date;
-        expiration_time?: Date;
-        expiration_interval?: number;
-        where?: Query;
-        data?: any;
     }
 
     class Push {
@@ -293,6 +219,12 @@ declare module Parse {
     }
 
     class Query extends JSONObject {
+
+        constructor(objectClass: any);
+        constructor(className: string);
+
+        static or(...var_args: Query[]): Query;
+
         addAscending(key: string): Query;
         addAscending(key: string[]): Query;
         addDescending(key: string): Query;
@@ -328,7 +260,6 @@ declare module Parse {
         near(key: string, point: GeoPoint): Query;
         notContainedIn(key: string, values: any[]): Query;
         notEqualTo(key: string, value: any): Query;
-        static or(...var_args: Query[]): Query;
         select(keys: string[]): Query;
         skip(n: number): Query;
         startsWith(key: string, prefix: string): Query;
@@ -336,73 +267,67 @@ declare module Parse {
         withinKilometers(key: string, point: GeoPoint, maxDistance: number): Query;
         withinMiles(key: string, point: GeoPoint, maxDistance: number): Query;
         withinRadians(key: string, point: GeoPoint, maxDistance: number): Query;
-        constructor(objectClass: any);
-        constructor(className: string);
+
     }
 
     class Relation extends JSONObject {
-        add(object: Object);
-        query(): Query;
-        remove(object: Object);
+
         constructor(parent?: Object, key?: string);
+
+        add(object: Object): void;
+        query(): Query;
+        remove(object: Object): void;
     }
 
-    class Role {
-        getName(): string;
+    class Role extends Object {
+
+        constructor(name: string, acl: ACL);
+
         getRoles(): Relation;
         getUsers(): Relation;
+
+        getName(): string;
         setName(name: string, options?: ParseDefaultOptions);
-        constructor(name: string, acl: ACL);
     }
 
-    interface RouterOptions {
-        routes: any;
-    }
+    class Router extends Events {
 
-    interface NavigateOptions {
-        trigger?: boolean;
-    }
+        private static extend(instanceProps: any, classProps: any): any;
 
-    class Router {
-        static extend(instanceProps: any, classProps: any): any;
+        constructor(options?: RouterOptions);
+
         initialize(): void;
         navigate(fragment: string, options?: NavigateOptions): Router;
         navigate(fragment: string, trigger?: boolean): Router;
         route(route: string, name: string, callback: Function): Router;
-        constructor(options?: RouterOptions);
     }
 
-    class User {
-        static allowCustomUserClass(isAllowed: boolean): void;
-        authenticated();
-        static become<T>(sessionToken: string, options: ParseDefaultOptions): Promise<T>;
+    class User extends Object {
+
         static current(): User;
-        fetch<T>(options: ParseDefaultOptions): Promise<T>;
-        getEmail(): string;
-        getSessionToken(): string;
-        getUsername(): string;
-        isCurrent(): boolean;
+        static signUp<T>(username: string, password: string, attrs: any, options?: ParseDefaultOptions): Promise<T>;
         static logIn<T>(username: string, password: string, options?: ParseDefaultOptions): Promise<T>;
-        logIn<T>(options?: ParseDefaultOptions): Promise<T>;
         static logOut(): void;
+        static allowCustomUserClass(isAllowed: boolean): void;
+        static become<T>(sessionToken: string, options: ParseDefaultOptions): Promise<T>;
+
+        signUp<T>(attrs: any, options?: ParseDefaultOptions): Promise<T>;
+        logIn<T>(options?: ParseDefaultOptions): Promise<T>;
+        fetch<T>(options: ParseDefaultOptions): Promise<T>;
         requestPasswordReset<T>(email: string, options?: ParseDefaultOptions): Promise<T>;
         save<T>(arg1: any, arg2: any, arg3: any): Promise<T>;
+        authenticated(): boolean;
+        isCurrent(): boolean;
+
+        getEmail(): string;
         setEmail(email: string, options: ParseDefaultOptions): boolean;
+
         setPassword(password: string, options?: ParseDefaultOptions): boolean;
+
+        getUsername(): string;
         setUsername(username: string, options?: ParseDefaultOptions): boolean;
-        static signUp<T>(username: string, password: string, attrs: any, options?: ParseDefaultOptions): Promise<T>;
-        signUp<T>(attrs: any, options?: ParseDefaultOptions): Promise<T>;
-    }
 
-
-    interface ViewOptions {
-        model?: any;
-        collection?: any;
-        el?: any;
-        id?: string;
-        className?: string;
-        tagName?: string;
-        attributes?: any[];
+        getSessionToken(): string;
     }
 
     class View extends Events {
@@ -779,14 +704,109 @@ declare module Parse {
         static X_DOMAIN_REQUEST: number;
     }
 
-    /**
-     * Call this method first to set up your authentication tokens for Parse.
-     * You can get your keys from the Data Browser on parse.com.
-     * @param {String} applicationId Your Parse Application ID.
-     * @param {String} javaScriptKey Your Parse JavaScript Key.
-     * @param {String} masterKey (optional) Your Parse Master Key. (Node.js only!)
-     */
-    function initialize(applicationId: string, javaScriptKey: string, masterKey?: string);
+    module Cloud {
+
+        interface CookieOptions {
+            domain?: string;
+            expires?: Date;
+            httpOnly?: boolean;
+            maxAge?: number;
+            path?: string;
+            secure?: boolean;
+        }
+
+        interface HttpOptions {
+            body?: any;
+            error?: Function;
+            headers?: any;
+            method?: string;
+            params?: any;
+            success?: Function;
+            url?: string;
+        }
+
+        interface HttpResponse {
+            buffer?: Buffer;
+            cookies?: any;
+            data?: any;
+            headers?: any;
+            status?: number;
+            text?: string;
+        }
+
+        interface JobRequest {
+            params: any;
+        }
+
+        interface JobStatus {
+            error?: Function;
+            message?: Function;
+            success?: Function;
+        }
+
+        interface FunctionRequest {
+            installationId?: String;
+            master?: boolean;
+            params?: any;
+            user?: User;
+        }
+
+        interface FunctionResponse {
+            success?: (response: HttpResponse) => void;
+            error?: (response: HttpResponse) => void;
+        }
+
+        interface Cookie {
+            name?: string;
+            options?: CookieOptions;
+            value?: string;
+        }
+
+        interface AfterSaveRequest extends FunctionRequest {}
+        interface AfterDeleteRequest extends FunctionRequest {}
+        interface AfterDeleteResponse extends FunctionResponse {}
+        interface BeforeDeleteRequest extends FunctionRequest {}
+        interface BeforeDeleteResponse extends FunctionResponse {}
+        interface BeforeSaveRequest extends FunctionRequest {}
+        interface BeforeSaveResponse extends FunctionResponse {}
+
+        function afterDelete(arg1: any, func?: (request: AfterDeleteRequest) => void);
+        function afterSave(arg1: any, func?: (request: AfterSaveRequest) => void);
+        function beforeDelete(arg1: any, func?: (request: BeforeDeleteRequest, response: BeforeDeleteResponse) => void);
+        function beforeSave(arg1: any, func?: (request: BeforeSaveRequest, response: BeforeSaveResponse) => void);
+        function define(name: string, func?: (request: FunctionRequest, response: FunctionResponse) => void);
+        function httpRequest<T>(options: ParseDefaultOptions): Promise<HttpResponse>;
+        function job(name: string, func?: (request: JobRequest, status: JobStatus) => void): HttpResponse;
+        function run<T>(name: string, data: any, options: Promise<T>);
+        function useMasterKey();
+    }
+
+    module Op {
+
+        interface BaseOperation extends IJSONObject {
+            objects(): any[];
+        }
+
+        interface Add extends BaseOperation {}
+
+        interface AddUnique extends BaseOperation {}
+
+        interface Increment extends IJSONObject {
+            amount: number;
+        }
+
+        interface Relation extends IJSONObject {
+            added(): Object[];
+            removed: Object[];
+        }
+
+        interface Set extends IJSONObject {
+            value(): any;
+        }
+
+        interface Unset extends IJSONObject {}
+
+    }
 }
 
 declare module "parse" {
