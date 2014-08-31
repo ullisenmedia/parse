@@ -4,6 +4,7 @@
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
 /// <reference path="../node/node.d.ts" />
+/// <reference path="../jquery/jquery.d.ts" />
 /// <reference path="../underscore/underscore.d.ts" />
 
 declare module Parse {
@@ -372,7 +373,7 @@ declare module Parse {
     }
 
     class User {
-        static allowCustomUserClass(isAllowed: boolean);
+        static allowCustomUserClass(isAllowed: boolean): void;
         authenticated();
         static become<T>(sessionToken: string, options: ParseDefaultOptions): Promise<T>;
         static current(): User;
@@ -381,28 +382,58 @@ declare module Parse {
         getSessionToken(): string;
         getUsername(): string;
         isCurrent(): boolean;
-        static logIn<T>(username: string, password: string, options: ParseDefaultOptions): Promise<T>;
-        logIn<T>(options: ParseDefaultOptions): Promise<T>;
-        static logOut();
-        requestPasswordReset<T>(email: string, options: ParseDefaultOptions): Promise<T>;
+        static logIn<T>(username: string, password: string, options?: ParseDefaultOptions): Promise<T>;
+        logIn<T>(options?: ParseDefaultOptions): Promise<T>;
+        static logOut(): void;
+        requestPasswordReset<T>(email: string, options?: ParseDefaultOptions): Promise<T>;
         save<T>(arg1: any, arg2: any, arg3: any): Promise<T>;
         setEmail(email: string, options: ParseDefaultOptions): boolean;
-        setPassword(password: string, options: ParseDefaultOptions): boolean;
-        setUsername(username: string, options: ParseDefaultOptions): boolean;
-        static signUp<T>(username: string, password: string, attrs: any, options: ParseDefaultOptions): Promise<T>;
-        signUp<T>(attrs: any, options: ParseDefaultOptions): Promise<T>;
+        setPassword(password: string, options?: ParseDefaultOptions): boolean;
+        setUsername(username: string, options?: ParseDefaultOptions): boolean;
+        static signUp<T>(username: string, password: string, attrs: any, options?: ParseDefaultOptions): Promise<T>;
+        signUp<T>(attrs: any, options?: ParseDefaultOptions): Promise<T>;
     }
 
-    class View {
-        $(selector: any): any;
-        delegateEvents(events: any);
-        static extend(instanceProps, classProps): any;
-        initialize();
-        make(tagName: string, attributes: any, content: any);
-        remove();
-        render();
-        setElement(element: any, delegate: any);
-        undelegateEvents();
+
+    interface ViewOptions {
+        model?: any;
+        collection?: any;
+        el?: any;
+        id?: string;
+        className?: string;
+        tagName?: string;
+        attributes?: any[];
+    }
+
+    class View extends Events {
+
+        private static extend(properties: any, classProperties?: any): any;
+
+        constructor(options?: ViewOptions);
+
+        $(selector: string): JQuery;
+        model: any;
+        collection: any;
+        setElement(element: HTMLElement, delegate?: boolean): View;
+        setElement(element: JQuery, delegate?: boolean): View;
+        id: string;
+        cid: string;
+        className: string;
+        tagName: string;
+
+        el: any;
+        $el: JQuery;
+        setElement(element: any): View;
+        attributes: any;
+        $(selector: any): JQuery;
+        render(): View;
+        remove(): View;
+        make(tagName: any, attributes?: any, content?: any): any;
+        delegateEvents(events?: any): any;
+        undelegateEvents(): any;
+
+        _configure(options: ViewOptions);
+        _ensureElement(): void;
     }
 
     class Error {
