@@ -1,3 +1,3 @@
-/**
- * Created by ejferg on 8/30/14.
- */
+/// <reference path="parse.d.ts" />
+
+Parse.API.ge
