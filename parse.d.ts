@@ -81,6 +81,7 @@ declare module Parse {
         function useMasterKey();
     }
 
+
     interface CallbackOptions {
         wait?: boolean;
         silent?: boolean;
@@ -130,10 +131,6 @@ declare module Parse {
         constructor(arg1: any);
     }
 
-    interface Op {
-
-    }
-
     interface IJSONObject {
         toJSON: any;
     }
@@ -180,6 +177,33 @@ declare module Parse {
         constructor(attributes: any, options: any);
     }
 
+    interface BaseOperation extends IJSONObject {
+        objects(): Array<any>;
+    }
+
+    interface IncrementOperation extends IJSONObject {
+        amount: number;
+    }
+
+    interface RelationOperation extends IJSONObject {
+        added(): Array<Object>;
+        removed: Array<Object>;
+    }
+
+    interface SetOperation extends IJSONObject {
+        value(): any;
+    }
+
+    class Op {
+        static Add: BaseOperation;
+        static AddUnique: BaseOperation;
+        static Increment: IncrementOperation;
+        static Relation: RelationOperation;
+        static Remove: BaseOperation;
+        static Set: SetOperation;
+        static Unset: IJSONObject;
+    }
+
     interface CollectionOptions {
         model?: Object;
         query?: Query;
@@ -220,7 +244,7 @@ declare module Parse {
         push_time?: Date;
         expiration_time?: Date;
         expiration_interval: number;
-        where?: Parse.Query;
+        where?: Query;
         data: any;
     }
 
@@ -267,7 +291,7 @@ declare module Parse {
         addAscending(key: Array<string>): Query;
         addDescending(key: string): Query;
         addDescending(key: Array<string>): Query;
-        ascending(key: string): Parse.Query;
+        ascending(key: string): Query;
         ascending(key: Array<string>): Query;
         collection(items: Array<Object>, options?: CallbackOptions): Collection;
         containedIn(key: string, values: Array<any>): Query;
