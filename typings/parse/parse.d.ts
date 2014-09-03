@@ -9,6 +9,12 @@
 
 declare module Parse {
 
+    var applicationId: string;
+    var javaScriptKey: string;
+    var masterKey: boolean;
+    var serverURL: string;
+    var VERSION: string;
+
     interface ParseDefaultOptions {
         wait?: boolean;
         silent?: boolean;
@@ -46,12 +52,16 @@ declare module Parse {
     }
 
     interface PushData {
-        channels?: any[];
+        channels?: string[];
         push_time?: Date;
         expiration_time?: Date;
         expiration_interval?: number;
         where?: Query;
         data?: any;
+        alert?: string;
+        badge: string;
+        sound: string;
+        title: string;
     }
 
     /**
@@ -134,30 +144,6 @@ declare module Parse {
         getWriteAccess(userId: string): boolean;
     }
 
-    /**
-     * Contains functions to deal with Push in Parse
-     * @name Parse.Push
-     * @namespace
-     */
-    interface Push {
-
-        new();
-        send<T>(data: PushData, options?: ParseDefaultOptions):Promise<T>;
-    }
-
-    /**
-     * Provides a set of utilities for using Parse with Facebook.
-     * @namespace
-     * Provides a set of utilities for using Parse with Facebook.
-     */
-    interface FacebookUtils {
-
-        init(options?: any);
-        isLinked(user: User): boolean;
-        link(user: User, permissions: any, options?: ParseDefaultOptions);
-        logIn(permissions: any, options?: ParseDefaultOptions);
-        unlink(user: User, options?: ParseDefaultOptions);
-    }
 
     /**
      * A Parse.File is a local representation of a file that is saved to the Parse
@@ -222,8 +208,8 @@ declare module Parse {
      */
     class GeoPoint extends BaseObject {
 
-        constructor(arg1: any, arg2: any);
-        current(options: ParseDefaultOptions): GeoPoint;
+        constructor(arg1?: any, arg2?: any);
+        current(options?: ParseDefaultOptions): GeoPoint;
         radiansTo(point: GeoPoint): number;
         kilometersTo(point: GeoPoint): number;
         milesTo(point: GeoPoint): number;
@@ -380,6 +366,27 @@ declare module Parse {
         unset(attr: string, options?: any): any;
 
         validate(attrs: any, options?: ParseDefaultOptions): boolean;
+
+    }
+
+    /**
+     * Every Parse application installed on a device registered for
+     * push notifications has an associated Installation object.
+     */
+    class Installation extends Object {
+
+        badge: any;
+        channels: string[];
+        timeZone: any;
+        deviceType: string;
+        pushType: string;
+        installationId: string;
+        deviceToken: string;
+        channelUris: string;
+        appName: string;
+        appVersion: string;
+        parseVersion: string;
+        appIdentifier: string;
 
     }
 
@@ -792,6 +799,20 @@ declare module Parse {
     }
 
     /**
+     * Provides a set of utilities for using Parse with Facebook.
+     * @namespace
+     * Provides a set of utilities for using Parse with Facebook.
+     */
+    module FacebookUtils {
+
+        function init(options?: any);
+        function isLinked(user: User): boolean;
+        function link(user: User, permissions: any, options?: ParseDefaultOptions): void;
+        function logIn(permissions: any, options?: ParseDefaultOptions): void;
+        function unlink(user: User, options?: ParseDefaultOptions): void;
+    }
+
+    /**
      * @namespace Contains functions for calling and declaring
      * <a href="/docs/cloud_code_guide#functions">cloud functions</a>.
      * <p><strong><em>
@@ -867,7 +888,7 @@ declare module Parse {
 
         function job(name: string, func?: (request: JobRequest, status: JobStatus) => void): HttpResponse;
 
-        function run<T>(name: string, data: any, options: Promise<T>);
+        function run<T>(name: string, data?: any, options?: ParseDefaultOptions): Promise<T>;
 
         function useMasterKey();
     }
@@ -912,6 +933,16 @@ declare module Parse {
         interface Unset extends IBaseObject {
         }
 
+    }
+
+    /**
+     * Contains functions to deal with Push in Parse
+     * @name Parse.Push
+     * @namespace
+     */
+    module Push {
+
+        function send<T>(data: PushData, options?: ParseDefaultOptions):Promise<T>;
     }
 
     /**

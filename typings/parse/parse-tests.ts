@@ -304,7 +304,7 @@ function test_analytics() {
     Parse.Analytics.track('error', { code: codeString })
 }
 
-function test_user() {
+function test_user_acl_roles() {
 
     var user = new Parse.User();
     user.set("username", "my name");
@@ -377,4 +377,128 @@ function test_user() {
     role.save();
 
     Parse.User.logOut();
+}
+
+function test_facebook_util() {
+
+    Parse.FacebookUtils.init({
+         appId      : 'YOUR_APP_ID', // Facebook App ID
+         channelUrl : '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
+         cookie     : true, // enable cookies to allow Parse to access the session
+         xfbml      : true  // parse XFBML
+     });
+
+    Parse.FacebookUtils.logIn(null, {
+        success: (user) => {
+            if (!user.existed()) {
+                alert("User signed up and logged in through Facebook!");
+            } else {
+                alert("User logged in through Facebook!");
+            }
+        },
+        error: (user, error) => {
+            alert("User cancelled the Facebook login or did not fully authorize.");
+        }
+    });
+
+    var user = Parse.User.current();
+
+    if (!Parse.FacebookUtils.isLinked(user)) {
+        Parse.FacebookUtils.link(user, null, {
+            success: (user) => {
+                alert("Woohoo, user logged in with Facebook!");
+            },
+            error: (user, error) => {
+                alert("User cancelled the Facebook login or did not fully authorize.");
+            }
+        });
+    }
+
+    Parse.FacebookUtils.unlink(user, {
+        success: (user) => {
+            alert("The user is no longer associated with their Facebook account.");
+        }
+    });
+}
+
+function test_cloud_functions() {
+
+    // TODO: MORE TESTS
+    Parse.Cloud.run('hello', {}, {
+        success: (result) => {
+            // result is 'Hello world!'
+        },
+        error: (error) => {
+        }
+    });
+}
+
+class PlaceObject extends Parse.Object {}
+
+function test_geo_points() {
+
+    var point = new Parse.GeoPoint({latitude: 40.0, longitude: -30.0});
+
+    var userObject = Parse.User.current();
+
+    // User's location
+    var userGeoPoint = userObject.get("location");
+
+    // Create a query for places
+    var query = new Parse.Query(Parse.User);
+// Interested in locations near user.
+    query.near("location", userGeoPoint);
+        // Limit what could be a lot of points.
+    query.limit(10);
+    // Final list of objects
+    query.find({
+       success: (placesObjects) => {
+       }
+   });
+
+
+    var southwestOfSF = new Parse.GeoPoint(37.708813, -122.526398);
+    var northeastOfSF = new Parse.GeoPoint(37.822802, -122.373962);
+
+    var query = new Parse.Query(PlaceObject);
+    query.withinGeoBox("location", southwestOfSF, northeastOfSF);
+    query.find({
+       success: function(place) {
+
+       }
+   });
+}
+
+function test_push() {
+
+    Parse.Push.send({
+        channels: [ "Giants", "Mets" ],
+        data: {
+            alert: "The Giants won against the Mets 2-3."
+        }
+    }, {
+        success: () => {
+            // Push was successful
+        },
+        error: (error) => {
+            // Handle error
+        }
+    });
+
+    var query = new Parse.Query(Parse.Installation);
+    query.equalTo('injuryReports', true);
+
+    Parse.Push.send({
+        where: query, // Set our Installation query
+        data: {
+            alert: "Willie Hayes injured by own pop fly."
+        }
+    }, {
+        success: function() {
+            // Push was successful
+        },
+        error: function(error) {
+            // Handle error
+        }
+    });
 }
