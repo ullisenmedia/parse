@@ -426,10 +426,23 @@ function test_cloud_functions() {
     // TODO: MORE TESTS
     Parse.Cloud.run('hello', {}, {
         success: (result) => {
-            // result is 'Hello world!'
+            // result
         },
         error: (error) => {
         }
+    });
+
+    Parse.Cloud.afterDelete('MyCustomClass', (request: Parse.Cloud.AfterDeleteRequest) => {
+        // result
+    });
+
+    Parse.Cloud.afterSave('MyCustomClass', (request: Parse.Cloud.AfterSaveRequest) => {
+        // result
+    });
+
+    Parse.Cloud.beforeDelete('MyCustomClass', (request: Parse.Cloud.BeforeDeleteRequest,
+                                               response: Parse.Cloud.BeforeDeleteResponse) => {
+        // result
     });
 }
 

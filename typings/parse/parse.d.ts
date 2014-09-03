@@ -874,15 +874,15 @@ declare module Parse {
         interface BeforeSaveRequest extends FunctionRequest {}
         interface BeforeSaveResponse extends FunctionResponse {}
 
-        function afterDelete(arg1: any, func?: (request: AfterDeleteRequest) => void);
+        function afterDelete(arg1: any, func?: (request: AfterDeleteRequest) => void): void;
 
-        function afterSave(arg1: any, func?: (request: AfterSaveRequest) => void);
+        function afterSave(arg1: any, func?: (request: AfterSaveRequest) => void): void;
 
-        function beforeDelete(arg1: any, func?: (request: BeforeDeleteRequest, response: BeforeDeleteResponse) => void);
+        function beforeDelete(arg1: any, func?: (request: BeforeDeleteRequest, response: BeforeDeleteResponse) => void): void;
 
-        function beforeSave(arg1: any, func?: (request: BeforeSaveRequest, response: BeforeSaveResponse) => void);
+        function beforeSave(arg1: any, func?: (request: BeforeSaveRequest, response: BeforeSaveResponse) => void): void;
 
-        function define(name: string, func?: (request: FunctionRequest, response: FunctionResponse) => void);
+        function define(name: string, func?: (request: FunctionRequest, response: FunctionResponse) => void): void;
 
         function httpRequest<T>(options: ParseDefaultOptions): Promise<HttpResponse>;
 
@@ -890,7 +890,7 @@ declare module Parse {
 
         function run<T>(name: string, data?: any, options?: ParseDefaultOptions): Promise<T>;
 
-        function useMasterKey();
+        function useMasterKey(): void;
     }
 
     /**
