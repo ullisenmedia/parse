@@ -1,28 +1,380 @@
 /// <reference path="parse.d.ts" />
 
-Parse.initialize('test', 'test');
-var acl = new Parse.ACL('test');
 
-acl.getPublicReadAccess();
-acl.toJSON();
+function test_events() {
 
-Parse.Analytics.track('test', '');
-Parse.Collection.extend({}, {});
+    var object = new Parse.Events();
+    object.on("alert", (eventName: string) => alert("Triggered " + eventName));
 
-var model = new Parse.Object({}, {});
-var models = [model];
+    object.trigger("alert", "an event");
 
-var collection = new Parse.Collection(models);
-collection.at(1);
+    var onChange = () => console.log('whatever');
+    var context: any;
 
-Parse.Events.bind();
-var user = Parse.User.current();
-user.getEmail();
+    object.off("change", onChange);
+    object.off("change");
+    object.off(null, onChange);
+    object.off(null, null, context);
+    object.off();
+}
 
-var error = new Parse.Error(Parse.Error.ACCOUNT_ALREADY_LINKED, "test");
+class GameScore extends Parse.Object {
 
-var query = new Parse.Query('test');
-var query1 = new Parse.Query('test');
-var quer2 = new Parse.Query('test');
+    constructor(options?: any) {
 
-Parse.Query.or(query1, quer2);
+        super("GameScore", options);
+    }
+}
+
+class Game extends Parse.Object {
+
+    constructor(options?: any) {
+
+        super("GameScore", options);
+    }
+
+    set score(score: GameScore)  {
+        this.set('score', score);
+    }
+
+    get score(): GameScore {
+        return this.get("gameScore");
+    }
+}
+
+function test_object() {
+
+    var game = new Game();
+
+// Create a new instance of that class.
+    var gameScore = new GameScore();
+
+    gameScore.set("score", 1337);
+    gameScore.set("playerName", "Sean Plott");
+    gameScore.set("cheatMode", false);
+
+
+    var score = gameScore.get("score");
+    var playerName = gameScore.get("playerName");
+    var cheatMode = gameScore.get("cheatMode");
+
+    gameScore.increment("score");
+    gameScore.addUnique("skills", "flying");
+    gameScore.addUnique("skills", "kungfu");
+
+    game.set("gameScore", gameScore);
+    game.score = gameScore;
+
+    var newGameScore = game.score;
+
+    game.save(null, {
+        success: (game) => {
+            // Execute any logic that should take place after the object is saved.
+            console.log('New object created with objectId: ' + game.id);
+        },
+        error: (game, error) => {
+            // Execute any logic that should take place if the save fails.
+            // error is a Parse.Error with an error code and description.
+            console.log('Failed to create new object, with error code: ' + error.message);
+        }
+    }).then(
+
+        (response) => {
+
+            console.log(response);
+        },
+        (error) => {
+
+            console.log(error);
+        }
+    );
+
+    game.fetch().then(
+
+        (response) => {
+
+            console.log(response);
+        },
+        (error) => {
+
+            console.log(error);
+        }
+    );
+
+    game.destroy().then(
+
+        (response) => {
+
+            console.log(response);
+        },
+        (error) => {
+
+            console.log(error);
+        }
+    );
+}
+
+function test_query() {
+
+    var gameScore = new GameScore();
+
+    var query = new Parse.Query(GameScore);
+    query.equalTo("playerName", "Dan Stemkoski");
+    query.notEqualTo("playerName", "Michael Yabuti");
+    query.greaterThan("playerAge", 18);
+    query.limit(10);
+    query.skip(10);
+
+    // Sorts the results in ascending order by the score field
+    query.ascending("score");
+
+    // Sorts the results in descending order by the score field
+    query.descending("score");
+
+    // Restricts to wins < 50
+    query.lessThan("wins", 50);
+
+    // Restricts to wins <= 50
+    query.lessThanOrEqualTo("wins", 50);
+
+    // Restricts to wins > 50
+    query.greaterThan("wins", 50);
+
+    // Restricts to wins >= 50
+    query.greaterThanOrEqualTo("wins", 50);
+
+    // Finds scores from any of Jonathan, Dario, or Shawn
+    query.containedIn("playerName",
+                      ["Jonathan Walsh", "Dario Wunsch", "Shawn Simon"]);
+
+    // Finds scores from anyone who is neither Jonathan, Dario, nor Shawn
+    query.notContainedIn("playerName",
+                         ["Jonathan Walsh", "Dario Wunsch", "Shawn Simon"]);
+
+    // Finds objects that have the score set
+    query.exists("score");
+
+    // Finds objects that don't have the score set
+    query.doesNotExist("score");
+    query.matchesKeyInQuery("hometown", "city", query);
+    query.doesNotMatchKeyInQuery("hometown", "city", query);
+    query.select("score", "playerName");
+
+    // Find objects where the array in arrayKey contains 2.
+    query.equalTo("arrayKey", 2);
+
+    // Find objects where the array in arrayKey contains all of the elements 2, 3, and 4.
+    query.containsAll("arrayKey", [2, 3, 4]);
+
+    query.startsWith("name", "Big Daddy's");
+    query.equalTo("score", gameScore);
+    query.exists("score");
+    query.include("score");
+    query.include(["score.team"]);
+
+    var testQuery = Parse.Query.or(query, query);
+
+    query.count().then(
+        (object) => {
+
+        },
+        (error) => {
+            console.log("Error: " + error.code + " " + error.message);
+        }
+    );
+
+    query.find({
+       success: (results) => {
+           alert("Successfully retrieved " + results.length + " scores.");
+           // Do something with the returned Parse.Object values
+           for (var i = 0; i < results.length; i++) {
+               var object = results[i];
+               console.log(object.id + ' - ' + object.get('playerName'));
+           }
+       },
+       error: (error) => {
+           alert("Error: " + error.code + " " + error.message);
+       }
+   });
+
+    query.first().then(
+        (object) => {
+
+        },
+        (error) => {
+            console.log("Error: " + error.code + " " + error.message);
+        }
+    );
+}
+
+class TestCollection extends Parse.Collection<Object> {
+
+    constructor(models?: Parse.Object[]) {
+
+        super(models);
+    }
+}
+
+function test_collections() {
+
+    var collection = new TestCollection();
+
+    var query = new Parse.Query(Game);
+    query.equalTo("temperature", "hot");
+    query.greaterThan("degreesF", 100);
+
+    collection = query.collection();
+
+    collection.comparator = (object) => {
+        return object.get("temperature");
+    };
+
+    collection.add([
+       {"name": "Duke"},
+       {"name": "Scarlett"}
+   ]);
+
+    collection.fetch().then(
+        (data) => {
+
+        },
+        (error) => {
+            console.log("Error: " + error.code + " " + error.message);
+        }
+    );
+
+    var model = collection.at(0);
+
+    // Or you can get it by Parse objectId.
+    var modelAgain = collection.get(model.id);
+
+    // Remove "Duke" from the collection.
+    collection.remove(model);
+
+    // Completely replace all items in the collection.
+    collection.reset([
+         {"name": "Hawk"},
+         {"name": "Jane"}
+     ]);
+}
+
+function test_file() {
+
+    var base64 = "V29ya2luZyBhdCBQYXJzZSBpcyBncmVhdCE=";
+    var file = new Parse.File("myfile.txt", { base64: base64 });
+
+    var bytes = [ 0xBE, 0xEF, 0xCA, 0xFE ];
+    var file = new Parse.File("myfile.txt", bytes);
+
+    var file = new Parse.File("myfile.zzz", {}, "image/png");
+
+    var src = file.url();
+
+    file.save().then(
+    () => {
+        // The file has been saved to Parse.
+    },
+    (error) => {
+        // The file either could not be read, or could not be saved to Parse.
+    });
+
+//    Parse.Cloud.httpRequest({ url: file.url() }).then(
+//        (response) => {
+//             // The file contents are in response.buffer.
+//        }
+//    );
+
+    // TODO: Check
+}
+
+function test_analytics() {
+
+    var dimensions = {
+        // Define  ranges to bucket data points into meaningful segments
+        priceRange: '1000-1500',
+        // Did the user filter the query?
+        source: 'craigslist',
+        // Do searches happen more often on weekdays or weekends?
+        dayType: 'weekday'
+    };
+   // Send the dimensions to Parse along with the 'search' event
+    Parse.Analytics.track('search', dimensions);
+
+    var codeString = '404';
+    Parse.Analytics.track('error', { code: codeString })
+}
+
+function test_user() {
+
+    var user = new Parse.User();
+    user.set("username", "my name");
+    user.set("password", "my pass");
+    user.set("email", "email@example.com");
+
+// other fields can be set just like with Parse.Object
+    user.set("phone", "415-392-0202");
+
+    user.signUp(null, {
+        success: function(user) {
+            // Hooray! Let them use the app now.
+        },
+        error: function(user, error) {
+            // Show the error message somewhere and let the user try again.
+            alert("Error: " + error.code + " " + error.message);
+        }
+    });
+
+    Parse.User.logIn("myname", "mypass").then(
+        (data) => {
+
+        },
+        (error) => {
+            console.log("Error: " + error.code + " " + error.message);
+        }
+    );
+
+    var currentUser = Parse.User.current();
+    if (currentUser) {
+        // do stuff with the user
+    } else {
+        // show the signup or login page
+    }
+
+    Parse.User.become("session-token-here").then(function (user) {
+        // The current user is now set to user.
+    }, function (error) {
+        // The token could not be validated.
+    });
+
+    var game = new Game();
+    game.set("score", new GameScore());
+    game.setACL(new Parse.ACL(Parse.User.current()));
+    game.save();
+
+    var groupACL = new Parse.ACL();
+
+    var userList = [];
+    // userList is an array with the users we are sending this message to.
+    for (var i = 0; i < userList.length; i++) {
+        groupACL.setReadAccess(userList[i], true);
+        groupACL.setWriteAccess(userList[i], true);
+    }
+
+    groupACL.setPublicReadAccess(true);
+
+    game.setACL(groupACL);
+
+    Parse.User.requestPasswordReset("email@example.com").then(function (data) {
+        // The current user is now set to user.
+    }, function (error) {
+        // The token could not be validated.
+    });
+
+    // By specifying no write privileges for the ACL, we can ensure the role cannot be altered.
+    var role = new Parse.Role("Administrator", groupACL);
+    role.getUsers().add(role);
+    role.getRoles().add(role);
+    role.save();
+
+    Parse.User.logOut();
+}

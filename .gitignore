@@ -59,6 +59,7 @@ build/Release
 node_modules
 typings/*
 !typings/parse
+lib
 
 # Users Environment Variables
 .lock-wscript

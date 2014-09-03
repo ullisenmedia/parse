@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/ullisenmedia/parse/issues"
   },
-  "homepage": "https://github.com/ullisenmedia/parse"
+  "homepage": "https://github.com/ullisenmedia/parse",
+  "dependencies": {
+    "underscore": "^1.7.0"
+  }
 }
