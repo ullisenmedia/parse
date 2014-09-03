@@ -98,6 +98,10 @@ declare module Parse {
         toJSON(): any;
     }
 
+    class BaseObject implements IBaseObject {
+        toJSON(): any;
+    }
+
     /**
      * Creates a new ACL.
      * If no argument is given, the ACL has no permissions for anyone.
@@ -273,10 +277,6 @@ declare module Parse {
 
         // Removes a Parse.Object or an array of Parse.Objects from this relation.
         remove(object: Object): void;
-    }
-
-    class BaseObject {
-        toJSON(): any;
     }
 
     /**
