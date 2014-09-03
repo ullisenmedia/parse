@@ -114,6 +114,8 @@ declare module Parse {
      */
     class ACL extends BaseObject {
 
+        permissionsById: any;
+
         constructor(arg1?: any);
 
         setPublicReadAccess(allowed: boolean);
@@ -208,7 +210,11 @@ declare module Parse {
      */
     class GeoPoint extends BaseObject {
 
+        latitude: number;
+        longitude: number;
+
         constructor(arg1?: any, arg2?: any);
+
         current(options?: ParseDefaultOptions): GeoPoint;
         radiansTo(point: GeoPoint): number;
         kilometersTo(point: GeoPoint): number;
@@ -233,6 +239,10 @@ declare module Parse {
      */
     class History {
 
+        handlers: any[];
+        interval: number;
+        fragment: string;
+
         checkUrl(e?: any): void;
         getFragment(fragment?: string, forcePushState?: boolean): string;
         getHash(windowOverride: Window): string;
@@ -248,6 +258,10 @@ declare module Parse {
      * Each instance of Parse.Relation is associated with a particular parent object and key.
      */
     class Relation extends BaseObject {
+
+        parent: Object;
+        key: string;
+        targetClassName: string;
 
         constructor(parent?: Object, key?: string);
 
@@ -295,6 +309,10 @@ declare module Parse {
     class Object extends BaseObject {
 
         id: any;
+        attributes: any;
+        cid: string;
+        changed: boolean;
+        className: string;
 
         constructor(className?: string, options?: any);
         constructor(attributes?: string[], options?: any);
@@ -416,6 +434,7 @@ declare module Parse {
     class Collection<T> extends Events implements IBaseObject {
 
         model: Object;
+        models: Object[];
         query: Query;
         comparator: (object: Object) => any;
 
@@ -553,6 +572,9 @@ declare module Parse {
      */
     class Query extends BaseObject {
 
+        objectClass: any;
+        className: string;
+
         constructor(objectClass: any);
 
         static or(...var_args: Query[]): Query;
@@ -684,9 +706,10 @@ declare module Parse {
      */
     class Router extends Events {
 
-        public static extend(instanceProps: any, classProps: any): any;
+        routes: any[];
 
         constructor(options?: RouterOptions);
+        static extend(instanceProps: any, classProps: any): any;
 
         initialize(): void;
 
