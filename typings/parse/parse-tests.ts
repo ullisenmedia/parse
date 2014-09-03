@@ -472,7 +472,7 @@ function test_geo_points() {
 function test_push() {
 
     Parse.Push.send({
-        channels: [ "Giants", "Mets" ],
+        channels: [ "Gia nts", "Mets" ],
         data: {
             alert: "The Giants won against the Mets 2-3."
         }
@@ -501,4 +501,10 @@ function test_push() {
             // Handle error
         }
     });
+}
+
+function test_view() {
+
+    var model = Parse.User.current();
+    var view = new Parse.View<Parse.User>();
 }

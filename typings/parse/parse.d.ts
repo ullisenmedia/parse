@@ -59,9 +59,9 @@ declare module Parse {
         where?: Query;
         data?: any;
         alert?: string;
-        badge: string;
-        sound: string;
-        title: string;
+        badge?: string;
+        sound?: string;
+        title?: string;
     }
 
     /**
@@ -759,7 +759,7 @@ declare module Parse {
      * documentation</a>.</p>
      * <p><strong><em>Available in the client SDK only.</em></strong></p>
      */
-    class View extends Events {
+    class View<T> extends Events {
 
         model: any;
         collection: any;
@@ -775,15 +775,15 @@ declare module Parse {
 
         static extend(properties: any, classProperties?: any): any;
 
-        $(selector: string): JQuery;
+        $(selector?: string): JQuery;
 
-        setElement(element: HTMLElement, delegate?: boolean): View;
+        setElement(element: HTMLElement, delegate?: boolean): View<T>;
 
-        setElement(element: JQuery, delegate?: boolean): View;
+        setElement(element: JQuery, delegate?: boolean): View<T>;
 
-        render(): View;
+        render(): View<T>;
 
-        remove(): View;
+        remove(): View<T>;
 
         make(tagName: any, attributes?: any, content?: any): any;
 
