@@ -80,6 +80,14 @@ declare module Parse {
      * @see Parse.Promise.prototype.then
      * @class
      */
+
+    interface IPromise<T> {
+
+        then<U>(resolvedCallback: (value: T) => IPromise<U>, rejectedCallback?: (reason: any) => IPromise<U>): IPromise<T>;
+        then<U>(resolvedCallback: (value: T) => U, rejectedCallback?: (reason: any) => IPromise<U>): IPromise<U>;
+        then<U>(resolvedCallback: (value: T) => U, rejectedCallback?: (reason: any) => U): IPromise<U>;
+    }
+
     interface Promise<T> {
 
         always(callback: Function): Promise<T>;
@@ -90,7 +98,13 @@ declare module Parse {
         is(): Promise<T>;
         reject(error: any): void;
         resolve(result: any): void;
-        then(resolvedCallback: Function, rejectedCallback: Function): Promise<T>;
+        then<U>(resolvedCallback: (value: T) => Promise<U>,
+                rejectedCallback?: (reason: any) => Promise<U>): IPromise<T>;
+        then<U>(resolvedCallback: (value: T) => U,
+            rejectedCallback?: (reason: any) => IPromise<U>): IPromise<T>;
+        then<U>(resolvedCallback: (value: T) => U,
+            rejectedCallback?: (reason: any) => U): IPromise<T>;
+
         when(promises: Promise<T>[]): Promise<T>;
     }
 
@@ -439,7 +453,6 @@ declare module Parse {
         comparator: (object: Object) => any;
 
         constructor(models?: Object[], options?: CollectionOptions);
-
         static extend(instanceProps: any, classProps: any): any;
 
         initialize(): void;
@@ -1046,5 +1059,10 @@ declare module Parse {
 }
 
 declare module "parse" {
-    export = Parse;
+    var type: typeof Parse;
+    var subType: {
+        Parse: typeof type;
+    }
+
+    export = subType;
 }

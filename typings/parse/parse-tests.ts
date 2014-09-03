@@ -1,5 +1,7 @@
 /// <reference path="parse.d.ts" />
 
+import parse = require("parse");
+var Parse = parse.Parse;
 
 function test_events() {
 
@@ -75,7 +77,7 @@ function test_object() {
         error: (game, error) => {
             // Execute any logic that should take place if the save fails.
             // error is a Parse.Error with an error code and description.
-            console.log('Failed to create new object, with error code: ' + error.message);
+            console.log('Fa iled to create new object, with error code: ' + error.message);
         }
     }).then(
 
@@ -275,14 +277,12 @@ function test_file() {
         // The file has been saved to Parse.
     },
     (error) => {
-        // The file either could not be read, or could not be saved to Parse.
+        // The file either could n ot be read, or could not be saved to Parse.
     });
 
-//    Parse.Cloud.httpRequest({ url: file.url() }).then(
-//        (response) => {
-//             // The file contents are in response.buffer.
-//        }
-//    );
+    Parse.Cloud.httpRequest({ url: file.url() }).then((response: Parse.Promise<Parse.Cloud.HttpResponse>) => {
+        // result
+    });
 
     // TODO: Check
 }
@@ -423,7 +423,6 @@ function test_facebook_util() {
 
 function test_cloud_functions() {
 
-    // TODO: MORE TESTS
     Parse.Cloud.run('hello', {}, {
         success: (result) => {
             // result
